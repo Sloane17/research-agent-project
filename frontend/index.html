@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智研 - 知识助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #f5f6f8;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #loginPage {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 40px 32px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+        }
+        #loginPage .logo {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        #loginPage .logo h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1f2937;
+            letter-spacing: 2px;
+        }
+        #loginPage .logo h1 span {
+            color: #1a56db;
+        }
+        #loginPage .logo p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        #loginPage .input-group {
+            margin-bottom: 16px;
+        }
+        #loginPage .input-group label {
+            display: block;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        #loginPage .input-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1f2937;
+            font-family: inherit;
+        }
+        #loginPage .input-group input:focus {
+            outline: none;
+            border-color: #1a56db;
+        }
+        #loginPage .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #1f2937;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 4px;
+        }
+        #loginPage .login-btn:hover {
+            background: #111827;
+        }
+        #loginPage .login-msg {
+            text-align: center;
+            font-size: 13px;
+            margin-top: 12px;
+            min-height: 20px;
+        }
+        #loginPage .login-msg.error {
+            color: #dc2626;
+        }
+        #loginPage .login-msg.success {
+            color: #16a34a;
+        }
+
+        #mainPage {
+            display: none;
+            width: 100%;
+            max-width: 880px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 32px 36px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        #mainPage .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 24px;
+        }
+        #mainPage .header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            letter-spacing: 1px;
+        }
+        #mainPage .header h2 span {
+            color: #1a56db;
+        }
+        #mainPage .header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        #mainPage .header .user-info .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        #mainPage .header .user-info .username {
+            color: #1f2937;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        #mainPage .header .user-info .logout-btn {
+            background: none;
+            border: 1px solid #d1d5db;
+            color: #6b7280;
+            padding: 4px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        #mainPage .header .user-info .logout-btn:hover {
+            border-color: #dc2626;
+            color: #dc2626;
+        }
+
+        #mainPage .input-section {
+            margin-bottom: 20px;
+        }
+        #mainPage .input-section textarea {
+            width: 100%;
+            height: 90px;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            color: #1f2937;
+        }
+        #mainPage .input-section textarea:focus {
+            outline: none;
+            border-color: #1a56db;
+        }
+        #mainPage .input-section .action-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        #mainPage .input-section .btn-primary {
+            padding: 10px 28px;
+            background: #1f2937;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        #mainPage .input-section .btn-primary:hover {
+            background: #111827;
+        }
+        #mainPage .input-section .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* ===== 进度条 ===== */
+        .progress-container {
+            width: 100%;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            margin: 12px 0 8px 0;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #1f2937;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        .progress-text {
+            font-size: 13px;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        .status-bar {
+            padding: 10px 16px;
+            border-radius: 6px;
+            margin: 12px 0 0 0;
+            font-size: 14px;
+        }
+        .status-bar.running {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        .status-bar.completed {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+        .status-bar.failed {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .task-list {
+            margin: 16px 0 20px 0;
+        }
+        .task-list .task-title {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        .task-item {
+            padding: 10px 14px;
+            background: #f9fafb;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+        .task-item:hover {
+            border-color: #d1d5db;
+        }
+        .task-item .task-name {
+            color: #1f2937;
+            font-size: 14px;
+        }
+        .task-item .task-status-badge {
+            padding: 2px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .task-status-badge.pending {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        .task-status-badge.running {
+            background: #e5e7eb;
+            color: #6b7280;
+        }
+        .task-status-badge.completed {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+        .task-status-badge.failed {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .report-box {
+            background: #f9fafb;
+            padding: 20px 24px;
+            border-radius: 6px;
+            margin-top: 12px;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.8;
+            max-height: 420px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            color: #1f2937;
+            font-family: 'Georgia', serif;
+        }
+        .report-box h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+
+        .empty-state {
+            color: #9ca3af;
+            font-size: 14px;
+            text-align: center;
+            padding: 12px 0;
+        }
+        .disclaimer {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-top: 16px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 16px;
+        }
+
+        @media (max-width: 600px) {
+            #loginPage,
+            #mainPage {
+                padding: 24px 18px;
+            }
+            #mainPage .header {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loginPage">
+    <div class="logo">
+        <h1>智研</h1>
+        <p>让研究更高效</p>
+    </div>
+    <div class="input-group">
+        <label>用户名</label>
+        <input type="text" id="loginUsername" placeholder="请输入用户名" value="testuser">
+    </div>
+    <div class="input-group">
+        <label>密码</label>
+        <input type="password" id="loginPassword" placeholder="请输入密码" value="123456">
+    </div>
+    <button class="login-btn" onclick="handleLogin()">登录 / 注册</button>
+    <div id="loginMsg" class="login-msg"></div>
+</div>
+
+<div id="mainPage">
+    <div class="header">
+        <h2>📋 <span>调研</span>中心</h2>
+        <div class="user-info">
+            <div class="avatar" id="avatarText">U</div>
+            <span class="username" id="displayUsername">用户</span>
+            <button class="logout-btn" onclick="handleLogout()">退出</button>
+        </div>
+    </div>
+
+    <div class="input-section">
+        <textarea id="question" placeholder="输入你想了解的问题" autocomplete="off"></textarea>
+        <div class="action-row">
+            <button class="btn-primary" id="researchBtn" onclick="startResearch()">开始分析</button>
+        </div>
+    </div>
+
+    <div id="statusArea"></div>
+
+    <!-- 进度条 -->
+    <div class="progress-container" id="progressContainer" style="display:none;">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-text" id="progressText"></div>
+
+    <div id="taskList" class="task-list"></div>
+    <div id="reportArea"></div>
+    <div class="disclaimer">内容仅供参考，建议结合实际情况使用</div>
+</div>
+
+<script>
+    const API_BASE = 'http://127.0.0.1:8000';
+    let token = localStorage.getItem('token');
+
+    window.onload = function() {
+        if (token) {
+            showMainPage();
+            loadTasks();
+            document.getElementById('question').value = '';
+        }
+    };
+
+    async function handleLogin() {
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        const msgEl = document.getElementById('loginMsg');
+
+        if (!username || !password) {
+            msgEl.textContent = '请输入用户名和密码';
+            msgEl.className = 'login-msg error';
+            return;
+        }
+
+        msgEl.textContent = '登录中...';
+        msgEl.className = 'login-msg';
+
+        try {
+            await fetch(`${API_BASE}/api/register?username=${username}&password=${password}`, {
+                method: 'POST',
+                headers: { 'accept': 'application/json' }
+            });
+        } catch (e) {}
+
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        try {
+            const resp = await fetch(`${API_BASE}/api/login`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await resp.json();
+
+            if (data.access_token) {
+                token = data.access_token;
+                localStorage.setItem('token', token);
+                localStorage.setItem('username', username);
+                msgEl.textContent = '登录成功';
+                msgEl.className = 'login-msg success';
+                setTimeout(() => {
+                    showMainPage();
+                    loadTasks();
+                }, 500);
+            } else {
+                msgEl.textContent = '登录失败';
+                msgEl.className = 'login-msg error';
+            }
+        } catch (e) {
+            msgEl.textContent = '网络错误，请确认服务是否运行';
+            msgEl.className = 'login-msg error';
+        }
+    }
+
+    function showMainPage() {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('mainPage').style.display = 'block';
+        const user = localStorage.getItem('username') || '用户';
+        document.getElementById('displayUsername').textContent = user;
+        document.getElementById('avatarText').textContent = user.charAt(0).toUpperCase();
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        token = null;
+        document.getElementById('loginPage').style.display = 'block';
+        document.getElementById('mainPage').style.display = 'none';
+        document.getElementById('loginMsg').textContent = '';
+        document.getElementById('loginMsg').className = 'login-msg';
+    }
+
+    // ============================================================
+    // 核心函数：开始研究（真实进度驱动）
+    // ============================================================
+    async function startResearch() {
+        const query = document.getElementById('question').value.trim();
+        if (!query) {
+            alert('请输入问题');
+            return;
+        }
+
+        const btn = document.getElementById('researchBtn');
+        btn.disabled = true;
+        btn.textContent = '处理中...';
+
+        const statusArea = document.getElementById('statusArea');
+        const reportArea = document.getElementById('reportArea');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+
+        reportArea.innerHTML = '';
+        statusArea.innerHTML = '';
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        progressBar.style.background = '#1f2937';
+        progressText.textContent = '准备开始...';
+
+        try {
+            // 1. 提交任务
+            const resp = await fetch(`${API_BASE}/api/research/start`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ query: query })
+            });
+            const data = await resp.json();
+            const taskId = data.task_id;
+
+            let isCompleted = false;
+
+            // 2. 轮询查询进度
+            const interval = setInterval(async () => {
+                try {
+                    const statusResp = await fetch(`${API_BASE}/api/research/status/${taskId}`, {
+                        headers: { 'Authorization': 'Bearer ' + token }
+                    });
+                    const statusData = await statusResp.json();
+
+                    // ===== 用后端返回的真实进度 =====
+                    const progress = statusData.progress || 0;
+                    progressBar.style.width = progress + '%';
+                    progressText.textContent = `处理中... ${progress}%`;
+
+                    if (statusData.status === 'completed') {
+                        isCompleted = true;
+                        clearInterval(interval);
+                        progressBar.style.width = '100%';
+                        progressBar.style.background = '#16a34a';
+                        progressText.textContent = '✅ 完成 (100%)';
+                        statusArea.innerHTML = '<div class="status-bar completed">完成</div>';
+                        reportArea.innerHTML = `
+                            <h3>分析报告</h3>
+                            <div class="report-box">${statusData.report || '内容为空'}</div>
+                        `;
+                        document.getElementById('question').value = '';
+                        loadTasks();
+                        btn.disabled = false;
+                        btn.textContent = '开始分析';
+                    } else if (statusData.status === 'failed') {
+                        isCompleted = true;
+                        clearInterval(interval);
+                        progressBar.style.width = '100%';
+                        progressBar.style.background = '#dc2626';
+                        progressText.textContent = '❌ 失败';
+                        statusArea.innerHTML = '<div class="status-bar failed">处理失败，请重试</div>';
+                        btn.disabled = false;
+                        btn.textContent = '开始分析';
+                    }
+                } catch (e) {
+                    console.log('轮询出错:', e);
+                }
+            }, 2000);
+
+            // 3. 超时保护（3分钟）
+            setTimeout(() => {
+                if (!isCompleted) {
+                    clearInterval(interval);
+                    progressBar.style.width = '100%';
+                    progressBar.style.background = '#dc2626';
+                    progressText.textContent = '⏰ 超时';
+                    statusArea.innerHTML = '<div class="status-bar failed">超时，请重试</div>';
+                    btn.disabled = false;
+                    btn.textContent = '开始分析';
+                }
+            }, 180000);
+
+        } catch (e) {
+            statusArea.innerHTML = `<div class="status-bar failed">请求失败: ${e.message}</div>`;
+            btn.disabled = false;
+            btn.textContent = '开始分析';
+        }
+    }
+
+    // ============================================================
+    // 辅助函数
+    // ============================================================
+    async function loadTasks() {
+        try {
+            const resp = await fetch(`${API_BASE}/api/research/tasks`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const tasks = await resp.json();
+            const container = document.getElementById('taskList');
+            if (!tasks || tasks.length === 0) {
+                container.innerHTML = '<div class="empty-state">暂无记录</div>';
+                return;
+            }
+            container.innerHTML = '<div class="task-title">历史记录</div>' +
+                tasks.map(task => `
+                    <div class="task-item" onclick="viewTask(${task.task_id})">
+                        <span class="task-name">${task.title}</span>
+                        <span class="task-status-badge ${task.status}">${task.status}</span>
+                    </div>
+                `).join('');
+        } catch (e) {}
+    }
+
+    async function viewTask(taskId) {
+        try {
+            const resp = await fetch(`${API_BASE}/api/research/status/${taskId}`, {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const data = await resp.json();
+            if (data.status === 'completed' && data.report) {
+                document.getElementById('reportArea').innerHTML = `
+                    <h3>分析报告</h3>
+                    <div class="report-box">${data.report}</div>
+                `;
+            } else {
+                document.getElementById('reportArea').innerHTML = `
+                    <div class="status-bar ${data.status}">状态: ${data.status}</div>
+                `;
+            }
+        } catch (e) {}
+    }
+</script>
+</body>
+</html>
